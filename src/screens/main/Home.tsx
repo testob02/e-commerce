@@ -1,6 +1,6 @@
 import { Dimensions, FlatList } from "react-native";
 import { ProductCard } from "../../components/ProductCard";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCategories } from "../../hooks/useCategories";
 import { HomeHeader } from "../home/HomeHeader";
 import { CategoriesModal } from "../../components/CAtegoriesModal";
@@ -83,16 +83,14 @@ export const HomeScreen = ({ navigation }: any) => {
             onCategorySelect={setSelectedCategory}
             onSeeAllCategories={() => setShowCategoriesModal(true)}
             activeSlide={activeSlide}
-            onCarouselScroll={useCallback(
-              (e) =>
-                setActiveSlide(
-                  Math.round(
-                    e.nativeEvent.contentOffset.x /
-                      Dimensions.get("window").width,
-                  ),
+            onCarouselScroll={(e) =>
+              setActiveSlide(
+                Math.round(
+                  e.nativeEvent.contentOffset.x /
+                    Dimensions.get("window").width,
                 ),
-              [],
-            )}
+              )
+            }
           />
         }
       />
