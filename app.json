@@ -31,10 +31,7 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": [
-      "@react-native-async-storage/async-storage",
-      "expo-secure-store"
-    ],
+    "plugins": ["expo-secure-store"],
     "extra": {
       "eas": {
         "projectId": "689db1c1-f450-4eef-b4ae-66af35f9e0f2"
