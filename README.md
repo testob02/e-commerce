@@ -74,15 +74,15 @@ This structure separates concerns clearly — screens contain only UI logic, con
 
 ## Screenshots
 
-| Screen          | Screenshot                                         |
-| --------------- | -------------------------------------------------- |
-| Splash screen   | ![Splash screen](screenshots\Splash.jpg)           |
-| Login screen    | ![LogIn screen](screenshots\LogIn.jpg)             |
-| Home screen     | ![Home screen](screenshots\Home.jpg)               |
-| Product Details | ![Product Details](screenshots\ProductDetails.jpg) |
-| Cart            | ![Cart](screenshots\Cart.jpg)                      |
-| CheckOut        | ![CheckOut](screenshots\CheckOut.jpg)              |
-| Profile         | ![Profile](screenshots\Profile.jpg)                |
+| Screen          | Screenshot                                                |
+| --------------- | --------------------------------------------------------- |
+| Splash screen   | ![Splash screen](assets\screenshots\Splash.jpg)           |
+| Login screen    | ![LogIn screen](assets\screenshots\LogIn.jpg)             |
+| Home screen     | ![Home screen](assets\screenshots\Home.jpg)               |
+| Product Details | ![Product Details](assets\screenshots\ProductDetails.jpg) |
+| Cart            | ![Cart](assets\screenshots\Cart.jpg)                      |
+| CheckOut        | ![CheckOut](assets\screenshots\CheckOut.jpg)              |
+| Profile         | ![Profile](assets\screenshots\Profile.jpg)                |
 
 ---
 
