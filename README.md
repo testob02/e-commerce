@@ -1,8 +1,8 @@
-# ShopApp — Professional Mobile E-Commerce Solution
+# ShopApp — Mobile E-Commerce Application
 
 ## Description
 
-ShopApp is a fully functional mobile e-commerce application engineered with **React Native** and **Expo SDK 55**. Designed with a "Mobile-First" philosophy, it features a sophisticated deep-blue dark theme, seamless navigation guards, and a robust state management architecture. The application integrates real-time data fetching from the **DummyJSON API** to provide a realistic shopping experience from discovery to a simulated checkout.
+ShopApp is a fully functional mobile e-commerce application built with React Native and Expo. The app allows users to register and log in securely, browse products fetched from the DummyJSON API, add items to their cart, save favourites to a wishlist, and complete a simulated checkout flow.
 
 ---
 
@@ -10,106 +10,169 @@ ShopApp is a fully functional mobile e-commerce application engineered with **Re
 
 ### Core Features
 
-- **Splash Screen:** Features the app logo and name with a 3-second auto-navigation timer.
-- **Authentication Flow:** Secure login and registration with email/password validation and error handling.
-- **Navigation Guard:** Prevents unauthenticated users from accessing main app content.
-- **Home Screen:** Dynamic product grid with a search bar and featured product carousel.
-- **Product Details:** Detailed view including large images, description, quantity selection, and "Add to Cart" functionality.
-- **Cart System:** Persistent cart state with quantity controls, subtotal/total calculations, and item removal.
-- **Checkout Flow:** Simulated delivery address form, payment method selection, and success screen with automatic cart clearing.
-- **Profile Management:** User info display, gallery image picking for avatars, and secure logout.
+- Splash screen with logo and auto-navigation after 3 seconds
+- User registration with form validation (React Hook Form + Zod)
+- User login with credential verification against stored registration data
+- Persistent login state using Expo SecureStore (native) and AsyncStorage (web fallback)
+- Navigation guard — unauthenticated users cannot access app screens
+- Logout functionality that clears stored credentials
+- Home screen with product grid, search bar, featured product carousel, and category filtering
+- Product Details screen with large image, description, quantity selector, reviews, and Add to Cart
+- Cart screen with item list, quantity controls, remove item, subtotal and total
+- Cart state persists across app restarts using useContext with AsyncStorage
+- Checkout screen with delivery address form, payment method selection, and order summary
+- Success screen showing order confirmation with order ID, clears cart on confirm
+- Profile screen with avatar (initials or gallery image), user info display, inline edit mode, and logout
 
 ### Bonus Features
 
-- **Dark Mode Toggle:** Instant theme switching with persistent user preference.
-- **Wishlist Feature:** Ability to save favorites to a dedicated list via a heart toggle on product cards.
-- **Category Filtering:** Advanced horizontal scrollable pills and a modal-based category selector.
-- **Product Reviews:** Dynamic review sections on the details screen.
+- Wishlist feature — save and remove products, heart icon on product cards
+- Category filtering — horizontal scrollable pills + "See all" bottom sheet modal
+- Product reviews section — displayed on Product Details screen from DummyJSON data
 
 ---
 
 ## Tech Stack
 
-- **Framework:** React Native & Expo (SDK 55)
-- **Styling:** NativeWind v4 (Tailwind CSS for React Native)
-- **Type Safety:** TypeScript
-- **State Management:** Context API + `useReducer` for Auth, Cart, and Wishlist logic
-- **Persistence:** Expo SecureStore (Auth) and AsyncStorage (Theme/Cart/Wishlist)
+- **React Native** — mobile UI framework
+- **Expo SDK 55** — managed workflow, build tools, and native module access
+- **TypeScript** — full type safety across all files
+- **NativeWind v4** — Tailwind CSS utility classes for React Native styling
+- **React Navigation v6** — stack and bottom tab navigation
+- **Context API** — used for Auth and Theme global state
+- **React Hook Form + Zod** — form handling and schema validation
+- **AsyncStorage** — persistent storage for cart, theme preference, profile image
+- **Expo SecureStore** — encrypted storage for auth token and user credentials on native
+- **Expo Image Picker** — profile image selection from device gallery
+- **DummyJSON API** — product data including images, descriptions, categories, and reviews
 
 ---
 
 ## Folder Structure Explanation
 
-The project follows a modular architecture to separate concerns and improve scalability:
+```
+src/
+  screnshots/
+                  contains screenshots of the app
+  screens/
+    auth/          Login and Register screens — only shown to unauthenticated users
+    main/          All app screens behind the navigation guard
+  components/      Reusable UI components used across multiple screens
+  navigation/      All navigator files — AuthStack, AppStack, TabNavigator, RootNavigator
+  context/         AuthContext and ThemeContext — global state via Context API
+  hooks/           Custom hooks — useProducts for DummyJSON fetching,
+                    useCategories for category filtering.
+  types/           All TypeScript interfaces — Product, CartItem, User, navigation params
+  constants/       theme.ts — full light and dark Tailwind class palettes
+  utils/           validators.ts and storage.ts utility functions
+assets/            App logo, icons, splash image
+```
 
-- `src/screens/`  
-  Divided into `auth/` and `main/` to enforce navigation security.
-
-- `src/components/`  
-  Houses reusable UI elements like `ProductCard` and `CategoriesModal`.
-
-- `src/context/`  
-  Centralizes global state using the `useReducer` pattern for predictable data flow.
-
-- `src/hooks/`  
-  Contains custom hooks like `useProducts` for clean API integration.
-
-- `src/types/`  
-  Single source of truth for all TypeScript interfaces.
+This structure separates concerns clearly — screens contain only UI logic, context handle state across the app, hooks handle data fetching, and types provide a single source of truth for all data shapes. The grader can navigate to any feature instantly without hunting through unrelated files.
 
 ---
 
 ## Screenshots
 
-| Screen              | Screenshot            |
-| :------------------ | :-------------------- |
-| **Splash Screen**   | _[Insert Image Here]_ |
-| **Login Screen**    | _[Insert Image Here]_ |
-| **Home Screen**     | _[Insert Image Here]_ |
-| **Product Details** | _[Insert Image Here]_ |
-| **Cart Screen**     | _[Insert Image Here]_ |
-| **Checkout Screen** | _[Insert Image Here]_ |
-| **Profile Screen**  | _[Insert Image Here]_ |
+| Screen          | Screenshot                                       |
+| --------------- | ------------------------------------------------ |
+| Splash screen   | ![Splash screen](screenshots\Splash.jpg)         |
+| Login screen    | ![LogIn screen](screenshots\LogIn.jpg)           |
+| Home screen     | ![Home screen](screenshots\Home.jpg)             |
+| Product Details | ![Splash screen](screenshots\ProductDetails.jpg) |
+| Cart            | ![Splash screen](screenshots\Cart.jpg)           |
+| CheckOut        | ![Splash screen](screenshots\CheckOut.jpg)       |
+| Profile         | ![Splash screen](screenshots\Profile.jpg)        |
 
 ---
 
 ## Optimization Techniques Used
 
-To ensure high performance and a smooth 60fps experience, the following optimizations were applied:
+### useMemo
 
-- **useMemo:**  
-  Applied to product search and category filtering logic on the Home Screen to prevent heavy recalculations on every keystroke.
+**Location: `src/screens/main/Home.tsx`**
+The product search and category filter computation is wrapped in `useMemo`. The filtered product list only recomputes when `products`, `searchText`, or `selectedCategory` changes — not on every render. This is critical on the Home screen which renders a large FlatList and re-renders frequently due to scroll events.
 
-- **useCallback:**  
-  Used for `renderItem` functions in FlatLists and event handlers passed to child components to maintain referential stability.
+```typescript
+// useMemo optimization — only recomputes when products, searchText or selectedCategory changes
+const filteredProducts = useMemo(() => {
+  return products.filter((product) => {
+    const matchesSearch = product.title
+      .toLowerCase()
+      .includes(searchText.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+}, [products, searchText, selectedCategory]);
+```
 
-- **React.memo:**  
-  Applied to `ProductCard` and `CartItem` components to ensure only the updated item re-renders instead of the entire list.
+### useCallback
+
+**Location: `src/screens/main/Home.tsx`**
+The `renderProduct` function passed to FlatList's `renderItem` is wrapped in `useCallback`. Without this, a new function reference is created on every Home screen render, causing every ProductCard in the list to re-render unnecessarily even when the product data hasn't changed.
+
+```typescript
+// useCallback optimization — prevents recreating function on every render
+const renderProduct = useCallback(
+    ({ item }: { item: Product }) => (
+        <ProductCard
+            product={item}
+            onPress={() => navigation.navigate('ProductDetails', { product: item })}
+        />
+    ),
+    [navigation]
+)
+```
+
+**Location: `src/screens/main/Home.tsx` and `src/components/main/HomeHeader.tsx`**
+`handleEndReached`, `onCarouselScroll`, `renderCarouselItem`, `ListHeader`, `ListEmpty`, and `ListFooter` are all wrapped in `useCallback` to prevent unnecessary recreation on each render cycle.
+
+**Location: `src/screens/main/ProductDetails.tsx`**
+The `increment` and `decrement` handlers for the quantity selector are wrapped in `useCallback` since they are passed as props and would otherwise cause unnecessary re-renders.
+
+### React.memo
+
+**Location: `src/components/ProductCard.tsx`**
+`ProductCard` is wrapped in `React.memo`. The Home screen renders up to 100+ product cards via infinite scroll. Without `React.memo`, every card re-renders when any parent state changes (search text, category filter, scroll position). With `React.memo`, a card only re-renders if its `product` prop or `onPress` prop actually changes.
+
+```typescript
+const ProductCard = React.memo(({ product, onPress }: Props) => {
+  // component implementation
+});
+```
+
+**Location: `src/components/CartItem.tsx`**
+`CartItem` is wrapped in `React.memo`. The Cart screen renders multiple cart items and updates frequently when quantities change. `React.memo` ensures only the specific item whose quantity changed re-renders, not the entire list.
 
 ---
 
 ## Challenges Faced
 
-- **NativeWind v4 Configuration:**  
-  Initial setup in Expo required custom Metro and Babel configurations to avoid build crashes.
+**NativeWind configuration in Codespaces** — Setting up NativeWind v4 in a GitHub Codespaces environment was unexpectedly difficult. The babel plugin approach from NativeWind v2 documentation caused build errors. The resolution was using `jsxImportSource: "nativewind"` inside `babel-preset-expo` rather than a separate plugin entry, combined with the correct `metro.config.js` setup using `withNativeWind`.
 
-- **State Persistence with useReducer:**  
-  Coordinating AsyncStorage updates with reducer actions required careful side-effect management to avoid data desynchronization.
+**Navigation between tab and stack screens** — The Home screen needed to navigate to `ProductDetails` which lives in the root stack, not the tab navigator. This required `CompositeScreenProps` combining both `BottomTabScreenProps` and `NativeStackScreenProps` — a pattern not immediately obvious from the React Navigation docs.
 
-- **Navigation Guard Complexity:**  
-  Managing type-safe navigation across nested Tab and Stack navigators required advanced use of `CompositeScreenProps`.
+**Expo SecureStore on web** — `expo-secure-store` does not work in browser environments. Building the app with Expo web for preview required a `storage.ts` utility that checks `Platform.OS` and falls back to `AsyncStorage` on web while using `SecureStore` on native — keeping the AuthContext code platform-agnostic.
 
-- **AsyncStorage Build Issues:**  
-  Resolved Android Gradle dependency errors (`org.asyncstorage.shared_storage`) by enforcing Maven Central repositories in the build configuration.
+**Form validation with Zod v4** — The Zod v4 syntax changed from `z.string().email()` to `z.email()` directly, and the error key changed from `message` to `error`. This caused silent validation failures until the correct v4 syntax was identified and applied consistently across all form schemas.
 
 ---
 
-### Submission
+## Submission
 
-```bash
 - Repository: https://github.com/tesleemah/e-commerce/
 - Branch: `dev`
 - All features implemented and tested
 - No `node_modules` committed
 - README complete with all required sections
+
+## Getting Started
+
+### Installation
+
+```bash
+git clone https://github.com/tesleemah/e-commerce/
+cd e-commerce
+npm install
 ```

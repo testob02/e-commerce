@@ -1,8 +1,8 @@
 import { Dimensions, FlatList } from "react-native";
 import { ProductCard } from "../../components/ProductCard";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCategories } from "../../hooks/useCategories";
-import { HomeHeader } from "../home/HomeHeader";
+import { HomeHeader } from "../../components/HomeHeader";
 import { CategoriesModal } from "../../components/CAtegoriesModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../context/ThemeContext";
@@ -12,13 +12,14 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList } from "../../types/navigation";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { Product } from "../../types";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<BottomTabParamList, "Home">,
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export const HomeScreen = ({ navigation }: any) => {
+export const HomeScreen = ({ navigation }: Props) => {
   const { classes } = useTheme();
   const { user } = useAuth();
   const { products, loading, initialLoad, hasMore, loadMore } = useProducts();
@@ -55,13 +56,16 @@ export const HomeScreen = ({ navigation }: any) => {
       <FlatList
         data={filteredProducts}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={() =>
-              navigation.navigate("ProductDetails", { product: item })
-            }
-          />
+        renderItem={useCallback(
+          ({ item }: { item: Product }) => (
+            <ProductCard
+              product={item}
+              onPress={() =>
+                navigation.navigate("ProductDetails", { product: item })
+              }
+            />
+          ),
+          [navigation],
         )}
         numColumns={2}
         columnWrapperStyle={{

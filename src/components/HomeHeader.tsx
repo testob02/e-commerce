@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Product } from "../../types";
+import { Product } from "../types";
 
 const { width } = Dimensions.get("window");
 
